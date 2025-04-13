@@ -1,0 +1,28 @@
+{
+  "name": "solana-orca-swap",
+  "version": "1.0.0",
+  "description": "Script to swap tokens on Orca Whirlpools",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "ts-node --esm swap.mts",
+    "swap2": "node --loader ts-node/esm swap2.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/bn.js": "^5.1.5",
+    "@types/node": "^20.12.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.29.0",
+    "@orca-so/common-sdk": "^0.6.11",
+    "@orca-so/whirlpools-sdk": "^0.13.19",
+    "@solana/web3.js": "^1.95.3",
+    "bn.js": "^5.2.1",
+    "dotenv": "^16.4.5"
+  }
+}
