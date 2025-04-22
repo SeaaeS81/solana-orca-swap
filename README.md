@@ -1,103 +1,135 @@
-Огляд:
-Цей скрипт (`swap2.ts`) виконує обмін SOL на wfragSOL через два послідовні свопи в Orca Whirlpools:
-1. SOL → JitoSOL
-2. JitoSOL → wfragSOL
+### Overview:
 
-Використовується бібліотека: `@orca-so/whirlpools-sdk@0.11.x`.
+This script (`swap2.ts`) performs a swap from SOL to wfragSOL via two consecutive swaps in Orca Whirlpools:
 
-Скрипт бере приватний ключ та інші налаштування з `.env`. Свопи виконуються послідовно у вигляді двох окремих транзакцій (як приклад — транзакція `5HMZ2apdk...`).
+- SOL → JitoSOL  
+- JitoSOL → wfragSOL
 
-Що робить скрипт:
-- Конвертує 0.01 SOL в JitoSOL, а потім у wfragSOL.
-- Працює з такими пулами Orca:
+It uses the library: `@orca-so/whirlpools-sdk@0.11.x`.
+
+The script retrieves the private key and other configurations from a `.env` file. The swaps are executed sequentially as two separate transactions (see example: transaction `5HMZ2apdk...`).
+
+### What the script does:
+
+- Converts 0.01 SOL to JitoSOL, and then to wfragSOL.
+- Uses the following Orca pools:
   - SOL/JitoSOL: `Hp53XEtt4S8SvPCXarsLSdGfZBuUr5mMmZmX2DRNXQKp`
   - JitoSOL/wfragSOL: `5xfKkFmhzNhHKTFUkh4PJmHSWB6LpRvhJcUMKzPP6md2`
-- Виводить у консоль суми й ID транзакцій.
+- Logs amounts and transaction IDs to the console.
 
-Токени:
+### Tokens:
+
 - SOL/WSOL: `So11111111111111111111111111111111111111112`
 - JitoSOL: `J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn`
 - wfragSOL: `WFRGSWjaz8tbAxsJitmbfRuFV2mSNwy7BMWcCwaA28U`
-- Гаманець: `H4YQr4rZ5csstyptwSzejVX2b11NeYaHiXmn8fFJKGEt`
 
-Структура скрипта:
-- Імпорти: бібліотеки для Solana, Orca, .env
-- Константи: адреси токенів, пулів, RPC
-- Логіка:
-  - Завантажує приватний ключ з `.env`
-  - Підключається до мережі Solana через RPC (Helius)
-  - Завантажує дані пулів Orca
-  - Виконує перший своп: SOL → JitoSOL
-  - Виконує другий своп: JitoSOL → wfragSOL
-  - Логує суми й посилання на транзакції у Solscan
+### Wallet:
+`H4YQr4rZ5csstyptwSzejVX2b11NeYaHiXmn8fFJKGEt`
 
 ---
 
-Налаштування проєкту:
+### Script structure:
 
-1. Установка залежностей
-У папці проєкту виконайте:
+**Imports:**  
+Libraries for Solana, Orca, `.env`
+
+**Constants:**  
+Token addresses, pool addresses, RPC endpoint
+
+**Logic:**
+- Loads the private key from `.env`
+- Connects to the Solana network via RPC (Helius)
+- Loads Orca pool data
+- Executes the first swap: SOL → JitoSOL
+- Executes the second swap: JitoSOL → wfragSOL
+- Logs the amounts and Solscan links for transactions
+
+---
+
+### Project setup:
+
+**Install dependencies:**  
+In the project folder, run:
+
 ```bash
 npm install @orca-so/whirlpools-sdk@0.11.3 @solana/web3.js @coral-xyz/anchor @orca-so/common-sdk bn.js dotenv ts-node
 ```
 
-Перевірте версію Whirlpools SDK:
+**Check the Whirlpools SDK version:**
+
 ```bash
 npm list @orca-so/whirlpools-sdk
 ```
-Повинна бути `0.11.x`.
 
-2. Налаштування змінних середовища
-Створіть файл `.env` у корені проєкту зі вмістом:
-```env
-PRIVATE_KEY=[2,198,66,16,...162,184,19,120,28,81]
-```
-`PRIVATE_KEY` — приватний ключ гаманця `H4YQr4rZ...`. Щоб створити новий гаманець:
-```bash
-solana-keygen new
-```
-Скопіюйте масив байтів з `keypair.json` у `.env`.
+It should be version `0.11.x`.
 
 ---
 
-Налаштування скрипта:
+### Environment variable configuration:
 
-1. Приватний ключ
-Повинен бути в `.env` для гаманця `H4YQr4rZ...`. Для іншого — оновіть значення `PRIVATE_KEY`.
+Create a `.env` file in the root of the project with the content:
 
-2. RPC
-Використовується RPC від Helius:
+```env
+PRIVATE_KEY=[2,198,66,16,...162,184,19,120,28,81]
+```
+
+**`PRIVATE_KEY`** — is the private key for wallet `H4YQr4rZ...`.  
+To create a new wallet:
+
+```bash
+solana-keygen new
+```
+
+Copy the byte array from `keypair.json` into `.env`.
+
+---
+
+### Script configuration:
+
+**Private Key:**  
+Must be in `.env` for wallet `H4YQr4rZ...`. Update the `PRIVATE_KEY` if using another wallet.
+
+**RPC:**  
+The script uses Helius RPC:
+
 ```ts
 const RPC_ENDPOINT = "https://mainnet.helius-rpc.com/?api-key=0a9c830e-335d-416d-a3cb-cdb534352664";
 ```
 
-3. Сума SOL
-У поточній конфігурації: `0.01 SOL` (на балансі ~0.012 SOL):
+**Amount of SOL:**  
+Currently set to 0.01 SOL (wallet balance should be at least ~0.012 SOL):
+
 ```ts
 const inputAmount = new BN(Math.floor(0.01 * LAMPORTS_PER_SOL));
 ```
 
-Для прикладу з транзакції `5HMZ2apdk...` було `0.095602285 SOL`. Якщо не вистачає балансу:
+In the example transaction `5HMZ2apdk...`, the amount was 0.095602285 SOL. If balance is insufficient, transfer more:
+
 ```bash
 solana transfer H4YQr4rZ5csstyptwSzejVX2b11NeYaHiXmn8fFJKGEt 0.1
 ```
-Після цього змініть у `swap2.ts`:
+
+Then update in `swap2.ts`:
+
 ```ts
 const inputAmount = new BN(Math.floor(0.095602285 * LAMPORTS_PER_SOL));
 ```
 
 ---
 
-Запуск скрипта:
+### Running the script:
 
-1. Перевірка ATA:
-Переконайтесь, що існують ATA для WSOL, JitoSOL, wfragSOL:
+**Check ATA:**  
+Ensure the wallet has Associated Token Accounts (ATA) for WSOL, JitoSOL, and wfragSOL:
+
 ```bash
 spl-token accounts --owner H4YQr4rZ5csstyptwSzejVX2b11NeYaHiXmn8fFJKGEt
 ```
-Якщо ні — створіть вручну або зверніться за допомогою.
 
-2. Додайте скрипт до `package.json`:
+If not — create them manually or seek help.
+
+**Add script to `package.json`:**
+
 ```json
 {
   "scripts": {
@@ -106,36 +138,42 @@ spl-token accounts --owner H4YQr4rZ5csstyptwSzejVX2b11NeYaHiXmn8fFJKGEt
 }
 ```
 
-3. Запуск:
+**Run the script:**
+
 ```bash
 npm run swap2
 ```
 
 ---
 
-Очікуваний результат:
-```
+### Expected result:
+
+```txt
 Wallet: H4YQr4rZ5csstyptwSzejVX2b11NeYaHiXmn8fFJKGEt
-Перший своп (SOL → JitoSOL)...
-Очікуваний вихід JitoSOL: ~0.008
+First swap (SOL → JitoSOL)...
+Expected JitoSOL output: ~0.008
 txid (SOL → JitoSOL): <txid>
 
-Другий своп (JitoSOL → wfragSOL)...
-Очікуваний вихід wfragSOL: ~0.009
+Second swap (JitoSOL → wfragSOL)...
+Expected wfragSOL output: ~0.009
 txid (JitoSOL → wfragSOL): <txid>
-
-https://solscan.io/tx/<txid>
 ```
 
-Перевірка токенів:
+View transaction on Solscan:  
+`https://solscan.io/tx/<txid>`
+
+**Check tokens:**
+
 ```bash
 spl-token accounts --owner H4YQr4rZ5csstyptwSzejVX2b11NeYaHiXmn8fFJKGEt
 ```
-Транзакції — через [Solscan](https://solscan.io).
+
+Transactions can be verified via Solscan.
 
 ---
 
-Труднощі:
-- Не вся документація доступна у відкритому доступі.
-- Можливі помилки при сумісності між бібліотеками та кодом.
+### Challenges:
+
+- Not all documentation is publicly available.
+- Possible compatibility issues between libraries and code.
 
